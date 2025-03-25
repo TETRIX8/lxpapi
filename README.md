@@ -1,7 +1,8 @@
 ## Сайт демо 
 [Перейти на сайт]( https://lxpapi.vercel.app/)
 ## Содержание
-1. [Авторизация  и получение данных профиля для всех на разных языках](#выбор-языка)
+1. [Авторизация  для студентов ](#выбор-языка)
+2.  [Получение данных дневника ученика  ](#запрос-дневника)
  ##  Все остальное только для учителей Скоро будет Для учеников 
 2. [Авторизация](#авторизация)
 3. [Получение данных пользователя (GetMe)](#получение-данных-пользователя-getme)
@@ -284,6 +285,415 @@ async function getUserData(token) {
 ```bash
 node api_client.js
 ```
+
+### Запрос Дневника 
+
+API предоставляет возможность авторизоваться и получить данные дневника студента. Для работы с API используется GraphQL.
+
+### Конечные точки:
+- **Авторизация**: `https://api.newlxp.ru/graphql`
+- **Данные дневника**: `https://api.newlxp.ru/graphql`
+
+---
+
+## 1. Авторизация
+
+Для выполнения запросов необходимо получить токен доступа через авторизацию.
+
+### Параметры авторизации:
+- **Email**: Адрес электронной почты пользователя.
+- **Password**: Пароль пользователя.
+
+<details>
+<summary>Код на Python</summary>
+
+```python
+import requests
+
+# Константы
+AUTH_URL = "https://api.newlxp.ru/graphql"
+
+# Запрос авторизации
+auth_query = """
+query SignIn($input: SignInInput!) {
+  signIn(input: $input) {
+    user {
+      id
+      isLead
+      __typename
+    }
+    accessToken
+    __typename
+  }
+}
+"""
+
+# Переменные для авторизации
+auth_variables = {
+    "input": {
+        "email": "KostoevAB24@magas.ithub.ru",
+        "password": "password"
+    }
+}
+
+# Выполняем POST-запрос для авторизации
+auth_response = requests.post(
+    AUTH_URL,
+    json={
+        "operationName": "SignIn",
+        "query": auth_query,
+        "variables": auth_variables
+    },
+    headers={
+        "Content-Type": "application/json",
+        "apollographql-client-name": "web"
+    }
+)
+
+# Проверяем успешность авторизации
+if auth_response.status_code == 200:
+    auth_data = auth_response.json()
+    access_token = auth_data["data"]["signIn"]["accessToken"]
+    student_id = auth_data["data"]["signIn"]["user"]["id"]
+    print(f"Авторизация успешна! Токен: {access_token}, ID студента: {student_id}")
+else:
+    print("Ошибка авторизации:", auth_response.status_code, auth_response.text)
+```
+
+</details>
+
+<details>
+<summary>Код на JavaScript</summary>
+
+```javascript
+const axios = require('axios');
+
+// Константы
+const AUTH_URL = "https://api.newlxp.ru/graphql";
+
+// Запрос авторизации
+const authQuery = `
+query SignIn($input: SignInInput!) {
+  signIn(input: $input) {
+    user {
+      id
+      isLead
+      __typename
+    }
+    accessToken
+    __typename
+  }
+}
+`;
+
+// Переменные для авторизации
+const authVariables = {
+  input: {
+    email: "KostoevAB24@magas.ithub.ru",
+    password: "password!"
+  }
+};
+
+// Выполняем POST-запрос для авторизации
+axios.post(AUTH_URL, {
+  operationName: "SignIn",
+  query: authQuery,
+  variables: authVariables
+}, {
+  headers: {
+    "Content-Type": "application/json",
+    "apollographql-client-name": "web"
+  }
+}).then(authResponse => {
+  if (authResponse.status === 200) {
+    const authData = authResponse.data;
+    const accessToken = authData.data.signIn.accessToken;
+    const studentId = authData.data.signIn.user.id;
+    console.log(`Авторизация успешна! Токен: ${accessToken}, ID студента: ${studentId}`);
+  } else {
+    console.error("Ошибка авторизации:", authResponse.status, authResponse.statusText);
+  }
+}).catch(error => {
+  console.error("Произошла ошибка:", error.message);
+});
+```
+
+</details>
+
+---
+
+## 2. Получение данных дневника
+
+После успешной авторизации можно получить данные дневника студента.
+
+### Параметры запроса:
+- **studentId**: Идентификатор студента (получается при авторизации).
+- **studyPeriodEndDate**: Дата окончания учебного периода (например, `"2025-06-29T21:00:00.000Z"`).
+
+<details>
+<summary>Код на Python</summary>
+
+```python
+# Запрос данных дневника
+diary_query = """
+query SearchStudentDisciplinesForDisciplinesTableWithPeriod($input: SearchStudentDisciplinesInput!, $studyPeriodEndDate: String, $studentId: UUID!) {
+  searchStudentDisciplines(input: $input) {
+    studentId
+    disciplineId
+    studyPeriod {
+      endDate
+      id
+      name
+      startDate
+      status
+      archivedAt
+      __typename
+    }
+    academicDifferenceDisciplines {
+      id
+      academicDifferenceStudent(studentId: $studentId) {
+        academicDifferenceStudentScore {
+          academicDifferenceAbsoluteScore
+          __typename
+        }
+        scoreForAnsweredAcademicDifferenceTasks
+        __typename
+      }
+      maxScore
+      teachers {
+        user {
+          id
+          firstName
+          lastName
+          middleName
+          __typename
+        }
+        __typename
+      }
+      __typename
+    }
+    discipline {
+      maxScore
+      code
+      studyHoursCount
+      archivedAt
+      suborganization {
+        id
+        organizationId
+        __typename
+      }
+      teachers {
+        user {
+          id
+          firstName
+          lastName
+          middleName
+          __typename
+        }
+        __typename
+      }
+      id
+      name
+      __typename
+    }
+    disciplineAttendance {
+      percent
+      total
+      visited
+      __typename
+    }
+    studentRecalculationScore {
+      academicDifferenceAbsoluteScore
+      __typename
+    }
+    academicDifferenceDisciplineGrade
+    learningGroup {
+      id
+      name
+      __typename
+    }
+    scoreForAnsweredTasks
+    disciplineGrade(studyPeriodEndDate: $studyPeriodEndDate)
+    disciplineGrade_V2(studyPeriodEndDate: $studyPeriodEndDate)
+    retakeDisciplineGrade
+    maxScoreForAnsweredTasks
+    scoreForAnsweredRetakeTasks
+    retakeScore
+    hasRetake
+    __typename
+  }
+}
+"""
+
+# Переменные для запроса дневника
+diary_variables = {
+    "input": {
+        "studentId": student_id  # Используем ID студента из авторизации
+    },
+    "studyPeriodEndDate": "2025-06-29T21:00:00.000Z",
+    "studentId": student_id  # Используем ID студента из авторизации
+}
+
+# Выполняем POST-запрос для получения данных дневника
+diary_response = requests.post(
+    DIARY_URL,
+    json={
+        "operationName": "SearchStudentDisciplinesForDisciplinesTableWithPeriod",
+        "query": diary_query,
+        "variables": diary_variables
+    },
+    headers={
+        "Content-Type": "application/json",
+        "apollographql-client-name": "web",
+        "authorization": f"Bearer {access_token}"  # Используем токен из авторизации
+    }
+)
+
+# Проверяем успешность запроса
+if diary_response.status_code == 200:
+    diary_data = diary_response.json()
+    print("Данные дневника успешно получены:")
+    print(diary_data)
+else:
+    print("Ошибка при запросе данных дневника:", diary_response.status_code, diary_response.text)
+```
+
+</details>
+
+<details>
+<summary>Код на JavaScript</summary>
+
+```javascript
+// Запрос данных дневника
+const diaryQuery = `
+query SearchStudentDisciplinesForDisciplinesTableWithPeriod($input: SearchStudentDisciplinesInput!, $studyPeriodEndDate: String, $studentId: UUID!) {
+  searchStudentDisciplines(input: $input) {
+    studentId
+    disciplineId
+    studyPeriod {
+      endDate
+      id
+      name
+      startDate
+      status
+      archivedAt
+      __typename
+    }
+    academicDifferenceDisciplines {
+      id
+      academicDifferenceStudent(studentId: $studentId) {
+        academicDifferenceStudentScore {
+          academicDifferenceAbsoluteScore
+          __typename
+        }
+        scoreForAnsweredAcademicDifferenceTasks
+        __typename
+      }
+      maxScore
+      teachers {
+        user {
+          id
+          firstName
+          lastName
+          middleName
+          __typename
+        }
+        __typename
+      }
+      __typename
+    }
+    discipline {
+      maxScore
+      code
+      studyHoursCount
+      archivedAt
+      suborganization {
+        id
+        organizationId
+        __typename
+      }
+      teachers {
+        user {
+          id
+          firstName
+          lastName
+          middleName
+          __typename
+        }
+        __typename
+      }
+      id
+      name
+      __typename
+    }
+    disciplineAttendance {
+      percent
+      total
+      visited
+      __typename
+    }
+    studentRecalculationScore {
+      academicDifferenceAbsoluteScore
+      __typename
+    }
+    academicDifferenceDisciplineGrade
+    learningGroup {
+      id
+      name
+      __typename
+    }
+    scoreForAnsweredTasks
+    disciplineGrade(studyPeriodEndDate: $studyPeriodEndDate)
+    disciplineGrade_V2(studyPeriodEndDate: $studyPeriodEndDate)
+    retakeDisciplineGrade
+    maxScoreForAnsweredTasks
+    scoreForAnsweredRetakeTasks
+    retakeScore
+    hasRetake
+    __typename
+  }
+}
+`;
+
+// Переменные для запроса дневника
+const diaryVariables = {
+  input: {
+    studentId: studentId // Используем ID студента из авторизации
+  },
+  studyPeriodEndDate: "2025-06-29T21:00:00.000Z",
+  studentId: studentId // Используем ID студента из авторизации
+};
+
+// Выполняем POST-запрос для получения данных дневника
+axios.post(DIARY_URL, {
+  operationName: "SearchStudentDisciplinesForDisciplinesTableWithPeriod",
+  query: diaryQuery,
+  variables: diaryVariables
+}, {
+  headers: {
+    "Content-Type": "application/json",
+    "apollographql-client-name": "web",
+    "authorization": `Bearer ${accessToken}` // Используем токен из авторизации
+  }
+}).then(diaryResponse => {
+  if (diaryResponse.status === 200) {
+    const diaryData = diaryResponse.data;
+    console.log("Данные дневника успешно получены:");
+    console.log(diaryData);
+  } else {
+    console.error("Ошибка при запросе данных дневника:", diaryResponse.status, diaryResponse.statusText);
+  }
+}).catch(error => {
+  console.error("Произошла ошибка:", error.message);
+});
+```
+
+</details>
+
+
+
+
+
 
 
 
