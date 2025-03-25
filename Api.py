@@ -2,8 +2,8 @@ import requests
 import json
 
 API_URL = "https://api.newlxp.ru/graphql"
-EMAIL = "evloevam@magas.ithub.ru"
-PASSWORD = "1Q2w3a4e$#"
+EMAIL="вашапочта"
+PASSWORD="пороль"
 
 # Авторизация
 def sign_in():
