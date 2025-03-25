@@ -1,8 +1,8 @@
 #!/bin/bash
 
 API_URL="https://api.newlxp.ru/graphql"
-EMAIL="evloevam@magas.ithub.ru"
-PASSWORD="1Q2w3a4e\$#"
+EMAIL="вашапочта"
+PASSWORD="пороль"
 
 # Авторизация
 response=$(curl -s -o response.json -w "%{http_code}" -X POST $API_URL \
