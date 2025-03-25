@@ -66,7 +66,7 @@ import json
 
 API_URL = "https://api.newlxp.ru/graphql"
 EMAIL = "evloevam@magas.ithub.ru"
-PASSWORD = "1Q2w3a4e$#"
+PASSWORD = "Password$#"
 
 # Авторизация
 def sign_in():
@@ -181,7 +181,7 @@ const axios = require("axios");
 
 const API_URL = "https://api.newlxp.ru/graphql";
 const EMAIL = "evloevam@magas.ithub.ru";
-const PASSWORD = "1Q2w3a4e$#";
+const PASSWORD = "Password$#";
 
 // Авторизация
 async function signIn() {
@@ -313,7 +313,7 @@ node api_client.js
   {
     "input": {
       "email": "evloevam@magas.ithub.ru",
-      "password": "1Q2w3a4e$#"
+      "password": "Password$#"
     }
   }
   ```
