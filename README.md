@@ -1,49 +1,27 @@
 
 
-# API GraphQL Скрипт для работы с платформой IThub Магас
+# GraphQL API Client
 
-Этот скрипт позволяет выполнять следующие операции:
-1. **Авторизация** через GraphQL API.
-2. **Получение данных пользователя** (например, профиль, роли, привязки к организациям).
-3. **Получение задач преподавателя**, включая дедлайны, статистику выполнения и связанные данные.
+Этот скрипт взаимодействует с GraphQL API для получения данных о пользователе, расписании, преподаваемых предметах, темах и контенте.
 
-## Установка и настройка
-
-### Предварительные требования
-1. Установите `curl` и `jq`:
-   ```bash
-   sudo apt install curl jq
-   ```
-2. Убедитесь, что у вас есть доступ к API (`https://api.newlxp.ru/graphql`).
-
-### Настройка скрипта
-1. Откройте файл скрипта и укажите свои учетные данные:
-   ```bash
-   EMAIL="ваш_email@example.com"
-   PASSWORD="ваш_пароль"
-   ```
-2. Убедитесь, что `teacherId` соответствует вашему ID в системе (если вы используете запрос `TeacherDisciplineTasks`).
-
-### Использование
-1. Выполните скрипт:
-   ```bash
-   ./script.sh
-   ```
-2. Результаты будут сохранены в файлы:
-   - `user_data.json`: Данные пользователя (результат запроса `GetMe`).
-   - `teacher_tasks.json`: Задачи преподавателя (результат запроса `TeacherDisciplineTasks`).
+## Содержание
+1. [Авторизация](#авторизация)
+2. [Получение данных пользователя (GetMe)](#получение-данных-пользователя-getme)
+3. [Получение задач преподавателя (TeacherDisciplineTasks)](#получение-задач-преподавателя-teacherdisciplinetasks)
+4. [Получение расписания (ManyClassesForSchedule)](#получение-расписания-manyclassesforschedule)
+5. [Получение предметов преподавания (GetTeacherDisciplines)](#получение-предметов-преподавания-getteacherdisciplines)
+6. [Получение информации о предмете (GetDisciplineInfoById)](#получение-информации-о-предмете-getdisciplineinfobyid)
+7. [Получение глав и тем предмета (GetDisciplineDataWithChaptersById)](#получение-глав-и-тем-предмета-getdisciplinedatawithchaptersbyid)
+8. [Показ контента темы (GetDisciplineChaptersForSidebar)](#показ-контента-темы-getdisciplinechaptersforsidebar)
 
 ---
 
-## Подробное описание
+### Авторизация
 
-<details>
-<summary>Авторизация</summary>
+#### Описание
+Запрос выполняет вход в систему и получает токен доступа для последующих запросов.
 
-### Описание
-Скрипт выполняет авторизацию через GraphQL API, отправляя запрос `SignIn` с указанными учетными данными (`email` и `password`). В ответ сервер возвращает JWT-токен, который используется для аутентификации последующих запросов.
-
-### Параметры запроса
+#### Параметры запроса
 - **operationName**: `SignIn`
 - **query**:
   ```graphql
@@ -59,17 +37,18 @@
     }
   }
   ```
+
 - **variables**:
   ```json
   {
     "input": {
-      "email": "ваш_email@example.com",
-      "password": "ваш_пароль"
+      "email": "evloevam@magas.ithub.ru",
+      "password": "1Q2w3a4e$#"
     }
   }
   ```
 
-### Пример ответа
+#### Пример ответа
 ```json
 {
   "data": {
@@ -84,17 +63,15 @@
   }
 }
 ```
-</details>
 
 ---
 
-<details>
-<summary>Получение данных пользователя (GetMe)</summary>
+### Получение данных пользователя (GetMe)
 
-### Описание
-Запрос `GetMe` возвращает подробную информацию о текущем пользователе, включая профиль, роли, привязки к организациям и другие данные.
+#### Описание
+Запрос возвращает информацию о текущем пользователе, включая ID, имя, роли, подразделения и другие параметры.
 
-### Параметры запроса
+#### Параметры запроса
 - **operationName**: `GetMe`
 - **query**:
   ```graphql
@@ -142,128 +119,88 @@
   }
   ```
 
-### Пример ответа
+#### Пример ответа
 ```json
 {
   "data": {
     "getMe": {
-      "avatar": "https://example.com/avatar.jpg",
-      "createdAt": "2024-10-09T10:24:37.577Z",
+      "avatar": null,
+      "createdAt": "2023-09-15T12:34:56.789Z",
       "email": "evloevam@magas.ithub.ru",
       "firstName": "Абдул-Кадыр",
       "id": "d1cd62ba-b879-42c6-89d3-54a3f24d2490",
       "isLead": false,
-      "roles": ["TEACHER"]
+      "roles": ["TEACHER"],
+      "phoneNumber": "+79281234567",
+      "legalDocumentsApprovedAt": "2023-09-16T10:00:00.000Z",
+      "notificationsSettings": {
+        "isPushDailyDigestOnEmail": true
+      },
+      "assignedSuborganizations": [
+        {
+          "suborganization": {
+            "name": "ИСиП Магас"
+          }
+        }
+      ],
+      "teacher": {
+        "assignedDisciplines_V2": [
+          {
+            "discipline": {
+              "name": "Введение в программирование",
+              "code": "161.ВВП.25В",
+              "studyPeriods": [
+                {
+                  "name": "Осень 2024",
+                  "startDate": "2024-09-01T00:00:00.000Z",
+                  "endDate": "2024-12-31T23:59:59.999Z"
+                }
+              ]
+            }
+          }
+        ]
+      }
     }
   }
 }
 ```
-</details>
 
 ---
 
-<details>
-<summary>Получение задач преподавателя (TeacherDisciplineTasks)</summary>
+### Получение задач преподавателя (TeacherDisciplineTasks)
 
-### Описание
-Запрос `TeacherDisciplineTasks` возвращает список задач преподавателя, включая дедлайны, статистику выполнения и связанные данные (например, темы, главы, дисциплины).
+#### Описание
+Запрос возвращает список задач преподавателя, включая информацию о группах, дисциплинах и типах задач.
 
-### Параметры запроса
+#### Параметры запроса
 - **operationName**: `TeacherDisciplineTasks`
 - **query**:
   ```graphql
   query TeacherDisciplineTasks($input: TeacherDisciplinesTasksInput!) {
     teacherDisciplineTasks(input: $input) {
-      ...TeacherAvailableTaskFragment
-      __typename
-    }
-  }
-  fragment TeacherAvailableTaskFragment on LearningGroupContentBlock {
-    contentBlockId
-    deadline
-    canBeSentAfterDeadline
-    testInterval {
-      from
-      to
-      __typename
-    }
-    learningGroup {
-      id
-      name
-      organizationId
-      organization {
-        name
-        id
-        isDeactivated
-        timezoneMinutesOffset
-        __typename
-      }
-      suborganizationIdV2
-      suborganizationV2 {
-        organization {
-          id
-          name
-          isDeactivated
-          timezoneMinutesOffset
-          __typename
-        }
-        __typename
-      }
-      __typename
-    }
-    topic {
-      name
-      id
-      isCheckPoint
-      isForPortfolio
-      chapterId
-      chapter {
+      contentBlockId
+      deadline
+      learningGroup {
         id
         name
-        disciplineId
-        discipline {
-          id
-          name
-          code
-          __typename
-        }
         __typename
       }
-      __typename
-    }
-    contentBlock {
-      ... on TaskDisciplineTopicContentBlock {
+      topic {
         id
-        kind
         name
-        maxScore
-        statistics {
-          answered
-          scored
-          total
-          __typename
-        }
         __typename
       }
-      ... on TestDisciplineTopicContentBlock {
+      contentBlock {
         id
         name
         kind
-        testMaxScore: maxScore
-        canBePassed
-        testId
-        statistics {
-          passed
-          total
-          __typename
-        }
         __typename
       }
       __typename
     }
-    __typename
   }
   ```
+
 - **variables**:
   ```json
   {
@@ -275,60 +212,188 @@
   }
   ```
 
-### Пример ответа
+#### Пример ответа
 ```json
 {
   "data": {
     "teacherDisciplineTasks": [
       {
-        "contentBlockId": "9d27e5b9-ec98-4b0b-9fbb-5e6d7269fc18",
-        "deadline": "2025-01-09T20:59:59.999Z",
+        "contentBlockId": "12345678-1234-1234-1234-123456789abc",
+        "deadline": "2025-03-24T23:59:59.000Z",
+        "learningGroup": {
+          "id": "048431c0-e42b-4476-b70a-a797b26a58f6",
+          "name": "2Р1-11.23"
+        },
+        "topic": {
+          "id": "afe8e555-06ae-433d-87c0-fb9c542f2705",
+          "name": "Введение в DevOps"
+        },
         "contentBlock": {
-          "name": "Написать код на закрепление темы: \"Алфавит и лексика\"",
-          "maxScore": 2,
-          "statistics": {
-            "answered": 23,
-            "scored": 22,
-            "total": 24
-          }
+          "id": "ddf99523-57fd-4a01-9a38-4a896d05953f",
+          "name": "Раньше было лучше? Каскадная модель разработки",
+          "kind": "INFO"
         }
       }
     ]
   }
 }
 ```
-</details>
 
 ---
 
-## Возможности анализа данных
+### Получение расписания (ManyClassesForSchedule)
 
-Используйте `jq` для извлечения нужных полей. Например:
+#### Описание
+Запрос возвращает расписание занятий, включая время начала и окончания, дисциплины, группы, преподавателей и аудитории.
 
-<details>
-<summary>Примеры использования jq</summary>
+#### Параметры запроса
+- **operationName**: `ManyClassesForSchedule`
+- **query**:
+  ```graphql
+  query ManyClassesForSchedule($input: ManyClassesInput!, $isAdministrationSchedule: Boolean = false) {
+    manyClasses(input: $input) {
+      id
+      from
+      to
+      name
+      role
+      isOnline
+      isAutoMeetingLink
+      meetingLink
+      discipline {
+        id
+        name
+        code
+        __typename
+      }
+      learningGroup {
+        id
+        name
+        __typename
+      }
+      classroom {
+        id
+        name
+        __typename
+      }
+      teacher {
+        id
+        user {
+          id
+          firstName
+          lastName
+          __typename
+        }
+        __typename
+      }
+      __typename
+    }
+  }
+  ```
 
-### Получить названия всех задач
-```bash
-cat teacher_tasks.json | jq '.data.teacherDisciplineTasks[].contentBlock.name'
+- **variables**:
+  ```json
+  {
+    "isAdministrationSchedule": false,
+    "input": {
+      "page": 1,
+      "pageSize": 50
+    }
+  }
+  ```
+
+#### Пример ответа
+```json
+{
+  "data": {
+    "manyClasses": [
+      {
+        "id": "94fbc880-083c-47ef-bb5c-ccdf7f176562",
+        "from": "2025-03-24T07:40:00.000Z",
+        "to": "2025-03-24T09:15:00.000Z",
+        "name": null,
+        "role": "TEACHER",
+        "isOnline": false,
+        "isAutoMeetingLink": true,
+        "meetingLink": "https://my.mts-link.ru/97601155/197574913/record-new/945835986",
+        "discipline": {
+          "id": "ddb1449d-f247-4b65-b8ec-877b33665420",
+          "name": "Введение в программирование",
+          "code": "161.ВВП.25В"
+        },
+        "learningGroup": {
+          "id": "539824fd-cfd3-446b-b5b3-ceafb2a1686e",
+          "name": "1П3-9.24"
+        }
+      }
+    ]
+  }
+}
 ```
-
-### Получить сроки выполнения задач
-```bash
-cat teacher_tasks.json | jq '.data.teacherDisciplineTasks[].deadline'
-```
-
-### Фильтрация задач по дедлайну
-```bash
-cat teacher_tasks.json | jq '.data.teacherDisciplineTasks[] | select(.deadline < "2025-01-10")'
-```
-</details>
 
 ---
 
-## Лицензия
-MIT License
+### Получение предметов преподавания (GetTeacherDisciplines)
 
----
+#### Описание
+Запрос возвращает список дисциплин, которые преподает пользователь, включая информацию о подразделениях, учебных периодах и группах.
 
-Теперь все разделы организованы в раскрывающиеся блоки, что делает документ более удобным для чтения. Если нужно добавить еще информацию или улучшить структуру, напишите! 😊
+#### Параметры запроса
+- **operationName**: `GetTeacherDisciplines`
+- **query**:
+  ```graphql
+  query GetTeacherDisciplines {
+    getMe {
+      teacher {
+        assignedDisciplines_V2 {
+          discipline {
+            id
+            name
+            code
+            studyPeriods {
+              id
+              name
+              startDate
+              endDate
+              __typename
+            }
+            __typename
+          }
+          learningGroups {
+            id
+            name
+            __typename
+          }
+          __typename
+        }
+        __typename
+      }
+      __typename
+    }
+  }
+  ```
+
+#### Пример ответа
+```json
+{
+  "data": {
+    "getMe": {
+      "teacher": {
+        "assignedDisciplines_V2": [
+          {
+            "discipline": {
+              "id": "229b29ef-01a9-43d5-8537-582ce9a25b2f",
+              "name": "Введение в DevOps",
+              "code": "3309.ВВД.25В",
+              "studyPeriods": [
+                {
+                  "id": "9d2b0f2d-52b2-4fff-8459-c5a46c51bbaf",
+                  "name": "Весенний семестр 24-25",
+                  "startDate": "2025-01-08T21:00:00.000Z",
+                  "endDate": "2025-06-29T21:00:00.000Z"
+                }
+              ]
+            },
+            "learningGroups": [
+              {
+                "id": "0484
