@@ -2,7 +2,7 @@ const axios = require("axios");
 
 const API_URL = "https://api.newlxp.ru/graphql";
 const EMAIL = "evloevam@magas.ithub.ru";
-const PASSWORD = "1Q2w3a4e$#";
+const PASSWORD = "password";
 
 // Авторизация
 async function signIn() {
