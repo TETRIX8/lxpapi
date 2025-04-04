@@ -1,4 +1,4 @@
-![image](https://media1.tenor.com/m/-CQoDnXfoTUAAAAC/api-zotac.gif)
+<img src="https://media1.tenor.com/m/-CQoDnXfoTUAAAAC/api-zotac.gif" alt="Описание GIF">
 
 ## Сайт демо 
 [Перейти на сайт]( https://ithubrating.vercel.app/)
