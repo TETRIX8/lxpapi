@@ -1,4 +1,5 @@
-
+<span style="color: green; font-size: 20px;">→</span> Продолжить  
+<span style="color: red; font-size: 20px;">←</span> Назад
 ## Сайт демо 
 [Перейти на сайт]( https://ithubrating.vercel.app/)
 
