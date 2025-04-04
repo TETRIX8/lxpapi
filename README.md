@@ -1,3 +1,4 @@
+![image](https://github.com/user-attachments/assets/20ba72f2-648f-48df-93b1-196ffd73f677)
 
 ## Сайт демо 
 [Перейти на сайт]( https://ithubrating.vercel.app/)
