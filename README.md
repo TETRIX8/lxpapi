@@ -1,5 +1,4 @@
-<span style="color: green; font-size: 20px;">→</span> Продолжить  
-<span style="color: red; font-size: 20px;">←</span> Назад
+<img src="https://media.tenor.com/iE-MMHZC5AgAAAAm/josemi-josemi-online.webp" alt="Описание GIF">
 ## Сайт демо 
 [Перейти на сайт]( https://ithubrating.vercel.app/)
 
