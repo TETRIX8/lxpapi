@@ -1343,7 +1343,7 @@ axios.post(DIARY_URL, {
 </details>
 
 <details>
-<summary><strong>📦 Установка</strong></summary>
+<summary><strong>📦 Полный код https://github.com/TETRIX8/lxpapi2/blob/main/api.js   </strong></summary>
 
 ```bash
 # 1. Клонировать репозиторий
