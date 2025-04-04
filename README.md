@@ -1,4 +1,4 @@
-<img src="https://media.tenor.com/iE-MMHZC5AgAAAAm/josemi-josemi-online.webp" alt="Описание GIF">
+
 ## Сайт демо 
 [Перейти на сайт]( https://ithubrating.vercel.app/)
 
@@ -1458,7 +1458,7 @@ MIT License © 2025 [A-K Project]
 
 
 
-
+<img src="https://media.tenor.com/iE-MMHZC5AgAAAAm/josemi-josemi-online.webp" alt="Описание GIF">
 
 
 
