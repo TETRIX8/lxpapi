@@ -3,7 +3,7 @@ import json
 
 API_URL = "https://api.newlxp.ru/graphql"
 EMAIL = "evloevam@magas.ithub.ru"
-PASSWORD = "1Q2w3a4e$#"
+PASSWORD = "pasword$#"
 
 # Авторизация
 def sign_in():
